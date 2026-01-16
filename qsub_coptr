@@ -1,0 +1,29 @@
+#!/bin/bash
+#$ -N coptr
+#$ -e /u/home/r/rwolff/PEG_Experiment_scripts/qsub_output
+#$ -o /u/home/r/rwolff/PEG_Experiment_scripts/qsub_output
+#$ -cwd
+#$ -r y
+#$ -j y
+#$ -l highp
+#$ -l h_data=20G
+#$ -l time=23:00:00
+
+. /u/local/Modules/default/init/modules.sh
+
+module load anaconda3
+conda activate coptr
+
+bam_dir=/u/project/ngarud/Garud_lab/metagenomic_fastq_files/PEG_experiment/tmp_bam
+
+peg_idx=/u/home/r/rwolff/PEG_Experiment_scripts/coptr/peg/peg_index/peg_index
+
+cov_map=/u/home/r/rwolff/PEG_Experiment_scripts/coptr/peg/peg_coverage_maps
+
+raw_dir=/u/project/ngarud/Garud_lab/metagenomic_fastq_files/PEG_experiment/coptr_test_raw
+
+coptr map $peg_idx $raw_dir $bam_dir
+
+coptr extract $bam_dir $cov_map
+
+coptr estimate $cov_map peg_coptr --min-reads 2500

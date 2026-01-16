@@ -1,0 +1,32 @@
+#!/bin/bash
+#$ -N MIDAS_species
+#$ -e /u/home/r/rwolff/PEG_Experiment_scripts/qsub_output
+#$ -o /u/home/r/rwolff/PEG_Experiment_scripts/qsub_output
+#$ -cwd
+#$ -r y
+#$ -j y
+#$ -l highp
+#$ -l h_data=8G
+#$ -l time=23:00:00
+#$ -t 1-37
+
+. /u/local/Modules/default/init/modules.sh
+
+module load singularity
+
+export MIDAS_DB=/u/project/ngarud/Garud_lab/metagenomic_fastq_files/PEG_experiment/midas_db/
+
+readarray accs < acc_list.csv
+accs=(null ${accs[@]}) 
+acc=${accs[$SGE_TASK_ID]}
+echo $acc
+
+FASTQDIR=/u/project/ngarud/Garud_lab/metagenomic_fastq_files/PEG_experiment/raw_data
+fastq1=${FASTQDIR}/${acc}_R1.fastq.gz
+fastq2=${FASTQDIR}/${acc}_R2.fastq.gz
+
+OUTDIR=/u/project/ngarud/Garud_lab/metagenomic_fastq_files/PEG_experiment/midas_output/midas_files/${acc}
+mkdir -p $OUTDIR
+
+singularity exec $H2_CONTAINER_LOC/MIDAS-mod.sif run_midas.py species $OUTDIR -1 $fastq1 -2 $fastq2 --remove_temp
+

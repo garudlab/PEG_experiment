@@ -1,0 +1,26 @@
+#!/bin/bash
+#$ -N merge_MIDAS_species
+#$ -e /u/home/r/rwolff/PEG_Experiment_scripts/qsub_output
+#$ -o /u/home/r/rwolff/PEG_Experiment_scripts/qsub_output
+#$ -cwd
+#$ -r y
+#$ -j y
+#$ -l highp
+#$ -l h_data=6G
+#$ -l time=23:00:00
+
+. /u/local/Modules/default/init/modules.sh
+
+module load singularity
+
+export MIDAS_DB=/u/project/ngarud/Garud_lab/metagenomic_fastq_files/PEG_experiment/midas_db/
+
+OUTDIR=/u/project/ngarud/Garud_lab/metagenomic_fastq_files/PEG_experiment/midas_output/merged_midas_output
+
+mkdir -p $OUTDIR/species
+
+singularity exec $H2_CONTAINER_LOC/MIDAS-1.3.2.sif merge_midas.py species $OUTDIR/species -i /u/project/ngarud/Garud_lab/metagenomic_fastq_files/PEG_experiment/midas_output/midas_files -t dir > $OUTDIR/species/species.log
+
+
+
+
